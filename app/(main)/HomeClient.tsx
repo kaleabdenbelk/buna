@@ -1,20 +1,30 @@
 "use client"
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Coffee, Users, Vote, MapPin, ArrowRight } from "lucide-react";
 import AnimatedCounter from "@/components/AnimatedCounter";
 import Link from "next/link";
 import Image from "next/image";
+import { authClient } from "@/lib/auth-client";
+import { getGlobalStats } from "@/app/actions/stats";
 
 interface HomeClientProps {
-  stats: {
+  stats?: {
     members: number;
     votes: number;
     cities: number;
   };
-  hasSession: boolean;
+  hasSession?: boolean;
 }
 
-export default function HomeClient({ stats, hasSession }: HomeClientProps) {
+export default function HomeClient({ stats: initialStats, hasSession: initialHasSession }: HomeClientProps = {}) {
+  const { data: session } = authClient.useSession();
+  const [stats, setStats] = useState(initialStats ?? { members: 0, votes: 0, cities: 0 });
+  const hasSession = initialHasSession ?? !!session;
+
+  useEffect(() => {
+    getGlobalStats().then(setStats);
+  }, []);
   return (
     <div className="min-h-screen">
       {/* Hero */}
@@ -69,36 +79,54 @@ export default function HomeClient({ stats, hasSession }: HomeClientProps) {
 
             {/* Floating Ethiopian flowers */}
             <div className="relative mt-16 flex justify-center items-center gap-6 md:gap-12">
-              <motion.img
-                src="/ethiopian-flower.png"
-                alt="Ethiopian flower motif"
+              <motion.div
                 animate={{ 
                   y: [0, -12, 0],
                   rotate: [0, 5, 0]
                 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="w-16 h-16 md:w-28 md:h-28 object-contain drop-shadow-2xl opacity-70"
-              />
-              <motion.img
-                src="/ethiopian-flower.png"
-                alt="Ethiopian flower motif center"
+                className="w-16 h-16 md:w-28 md:h-28"
+              >
+                <Image
+                  src="/ethiopian-flower.png"
+                  alt="Ethiopian flower motif"
+                  width={112}
+                  height={112}
+                  className="w-full h-full object-contain drop-shadow-2xl opacity-70"
+                />
+              </motion.div>
+              <motion.div
                 animate={{ 
                   y: [0, -15, 0],
                   scale: [1, 1.1, 1]
                 }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
-                className="w-20 h-20 md:w-32 md:h-32 object-contain drop-shadow-2xl opacity-90"
-              />
-              <motion.img
-                src="/ethiopian-flower.png"
-                alt="Ethiopian flower motif mirror"
+                className="w-20 h-20 md:w-32 md:h-32"
+              >
+                <Image
+                  src="/ethiopian-flower.png"
+                  alt="Ethiopian flower motif center"
+                  width={128}
+                  height={128}
+                  className="w-full h-full object-contain drop-shadow-2xl opacity-90"
+                />
+              </motion.div>
+              <motion.div
                 animate={{ 
                   y: [0, -12, 0],
                   rotate: [0, -5, 0]
                 }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="w-16 h-16 md:w-28 md:h-28 object-contain drop-shadow-2xl opacity-70 scale-x-[-1]"
-              />
+                className="w-16 h-16 md:w-28 md:h-28 scale-x-[-1]"
+              >
+                <Image
+                  src="/ethiopian-flower.png"
+                  alt="Ethiopian flower motif mirror"
+                  width={112}
+                  height={112}
+                  className="w-full h-full object-contain drop-shadow-2xl opacity-70"
+                />
+              </motion.div>
             </div>
           </div>
         </div>
@@ -168,13 +196,19 @@ export default function HomeClient({ stats, hasSession }: HomeClientProps) {
             viewport={{ once: true }}
             className="ceramic-surface p-8 md:p-16 text-center max-w-3xl mx-auto"
           >
-            <motion.img
-              src="/ethiopian-flower.png"
-              alt="Ethiopian flower"
+            <motion.div
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-12 h-12 object-contain mx-auto mb-4"
-            />
+              className="w-12 h-12 mx-auto mb-4"
+            >
+              <Image
+                src="/ethiopian-flower.png"
+                alt="Ethiopian flower"
+                width={48}
+                height={48}
+                className="w-full h-full object-contain"
+              />
+            </motion.div>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4" style={{ lineHeight: 1.1 }}>
               Discover Your Buna Personality
             </h2>
